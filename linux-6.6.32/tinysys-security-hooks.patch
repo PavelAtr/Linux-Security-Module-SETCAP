@@ -1,0 +1,47 @@
+--- linux-6.6.32/security/security.c	2024-05-25 17:22:56.000000000 +0300
++++ linux-6.6.32-tinysys/security/security.c	2024-06-11 18:56:34.328012031 +0300
+@@ -771,18 +771,23 @@
+ 			P->hook.FUNC(__VA_ARGS__);		\
+ 	} while (0)
+ 
+-#define call_int_hook(FUNC, IRC, ...) ({			\
+-	int RC = IRC;						\
+-	do {							\
+-		struct security_hook_list *P;			\
+-								\
+-		hlist_for_each_entry(P, &security_hook_heads.FUNC, list) { \
+-			RC = P->hook.FUNC(__VA_ARGS__);		\
+-			if (RC != 0)				\
+-				break;				\
+-		}						\
+-	} while (0);						\
+-	RC;							\
++#define call_int_hook(FUNC, IRC, ...) ({                        \
++        int RC = IRC;                                           \
++        int FINRC = IRC;                                        \
++        do {                                                    \
++                struct security_hook_list *P;                   \
++                                                                \
++                hlist_for_each_entry(P, &security_hook_heads.FUNC, list) { \
++                        RC = P->hook.FUNC(__VA_ARGS__);         \
++                        if (RC == -EGRANTED)                    \
++                                FINRC = -EGRANTED;              \
++                        if (RC != 0 && FINRC != -EGRANTED)      \
++                                FINRC = RC;                     \
++                }                                               \
++                if (FINRC == -EGRANTED)                         \
++                        FINRC = 0;                              \
++        } while (0);                                            \
++        FINRC;                                                  \
+ })
+ 
+ /* Security operations */
+--- linux-6.6.32/include/linux/errno.h	2024-05-25 17:22:56.000000000 +0300
++++ linux-6.6.32-tinysys/include/linux/errno.h	2024-06-11 18:53:09.124011673 +0300
+@@ -33,4 +33,6 @@
+ #define ERECALLCONFLICT	530	/* conflict with recalled state */
+ #define ENOGRACE	531	/* NFS file lock reclaim refused */
+ 
++#define EGRANTED        540	/* Security hook granted mandatory */
++
+ #endif

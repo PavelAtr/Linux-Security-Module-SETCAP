@@ -1,0 +1,22 @@
+--- linux-6.6.32/security/Kconfig	2024-05-25 17:22:56.000000000 +0300
++++ linux-6.6.32-tinysys/security/Kconfig	2024-06-11 20:52:31.831998529 +0300
+@@ -195,6 +195,8 @@
+ source "security/lockdown/Kconfig"
+ source "security/landlock/Kconfig"
+ 
++source "security/setcap/Kconfig"
+ 
+ source "security/integrity/Kconfig"
+ 
+ choice
+--- linux-6.6.32/security/Makefile	2024-05-25 17:22:56.000000000 +0300
++++ linux-6.6.32-tinysys/security/Makefile	2024-06-11 20:52:31.891998529 +0300
+@@ -24,6 +24,8 @@
+ obj-$(CONFIG_CGROUPS)			+= device_cgroup.o
+ obj-$(CONFIG_BPF_LSM)			+= bpf/
+ obj-$(CONFIG_SECURITY_LANDLOCK)		+= landlock/
++obj-$(CONFIG_SETCAP)			+= setcap/
+ 
+ 
+ # Object integrity file lists
+ obj-$(CONFIG_INTEGRITY)			+= integrity/

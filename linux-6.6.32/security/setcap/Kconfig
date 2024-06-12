@@ -1,0 +1,5 @@
+config SETCAP
+    bool "Setting global capabilities"
+    default n
+    help
+        "Disable or enable for all users given system capabilities"
